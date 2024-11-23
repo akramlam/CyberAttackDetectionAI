@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Network IDS</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">
+            <i class="fas fa-shield-alt"></i>
+            <span>NIDS</span>
+        </div>
+        <nav>
+            <a href="#" class="active"><i class="fas fa-home"></i> Dashboard</a>
+            <a href="#alerts"><i class="fas fa-bell"></i> Alerts</a>
+            <a href="#stats"><i class="fas fa-chart-line"></i> Statistics</a>
+            <a href="#settings"><i class="fas fa-cog"></i> Settings</a>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <header>
+            <div class="header-content">
+                <h1>Network Intrusion Detection System</h1>
+                <div class="system-status">
+                    <span class="status-label">System Status:</span>
+                    <span id="system-status" class="status-stopped">Stopped</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="control-panel">
+            <div class="control-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-sliders-h"></i> System Control</h2>
+                </div>
+                <div class="card-content">
+                    <button id="start-btn" class="btn btn-success" onclick="startSystem()">
+                        <i class="fas fa-play"></i> Start Monitoring
+                    </button>
+                    <button id="stop-btn" class="btn btn-danger" onclick="stopSystem()" disabled>
+                        <i class="fas fa-stop"></i> Stop Monitoring
+                    </button>
+                </div>
+            </div>
+
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <i class="fas fa-network-wired"></i>
+                    <div class="stat-info">
+                        <h3>Network Traffic</h3>
+                        <p id="traffic-rate">0 packets/s</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div class="stat-info">
+                        <h3>Alerts Today</h3>
+                        <p id="alerts-count">0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-shield-virus"></i>
+                    <div class="stat-info">
+                        <h3>Threat Level</h3>
+                        <p id="threat-level">Low</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="alerts-container">
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-bell"></i> Live Alerts</h2>
+                    <div class="card-actions">
+                        <button class="btn btn-small" onclick="clearAlerts()">
+                            <i class="fas fa-trash"></i> Clear
+                        </button>
+                        <button class="btn btn-small" onclick="exportAlerts()">
+                            <i class="fas fa-download"></i> Export
+                        </button>
+                    </div>
+                </div>
+                <div id="alerts" class="alerts-list"></div>
+            </div>
+        </div>
+
+        <div class="dashboard-link">
+            <a href="{{ url_for('to_dashboard') }}" class="btn btn-primary">
+                <i class="fas fa-chart-line"></i> View Detailed Dashboard
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const socket = io();
+        const alertsDiv = document.getElementById('alerts');
+        const statusSpan = document.getElementById('system-status');
+        const startBtn = document.getElementById('start-btn');
+        const stopBtn = document.getElementById('stop-btn');
+        let alertCount = 0;
+        
+        function updateStats() {
+            fetch('/api/stats')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('traffic-rate').textContent = 
+                        `${data.packets_processed.toFixed(2)} packets/s`;
+                    document.getElementById('alerts-count').textContent = 
+                        data.alerts_today;
+                    updateThreatLevel(data.anomaly_rate);
+                });
+        }
+
+        function updateThreatLevel(anomalyRate) {
+            let level = 'Low';
+            if (anomalyRate > 0.7) level = 'Critical';
+            else if (anomalyRate > 0.3) level = 'Medium';
+            document.getElementById('threat-level').textContent = level;
+        }
+        
+        function startSystem() {
+            fetch('/control/start', {method: 'POST'})
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        statusSpan.textContent = 'Running';
+                        statusSpan.className = 'status-running';
+                        startBtn.disabled = true;
+                        stopBtn.disabled = false;
+                        showNotification('System started successfully', 'success');
+                    }
+                });
+        }
+        
+        function stopSystem() {
+            fetch('/control/stop', {method: 'POST'})
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        statusSpan.textContent = 'Stopped';
+                        statusSpan.className = 'status-stopped';
+                        startBtn.disabled = false;
+                        stopBtn.disabled = true;
+                        showNotification('System stopped successfully', 'info');
+                    }
+                });
+        }
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.innerHTML = `
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'}"></i>
+                ${message}
+            `;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+        }
+        
+        function clearAlerts() {
+            alertsDiv.innerHTML = '';
+            alertCount = 0;
+            showNotification('Alerts cleared', 'info');
+        }
+
+        function exportAlerts() {
+            const alerts = Array.from(alertsDiv.children).map(alert => {
+                return {
+                    timestamp: alert.querySelector('strong').textContent,
+                    sourceIp: alert.querySelector('.source-ip').textContent,
+                    level: alert.querySelector('.alert-level').textContent,
+                    details: alert.querySelector('.alert-details').textContent
+                };
+            });
+
+            const blob = new Blob([JSON.stringify(alerts, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `alerts_${new Date().toISOString()}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showNotification('Alerts exported successfully', 'success');
+        }
+        
+        socket.on('new_alert', function(data) {
+            const alertElement = document.createElement('div');
+            alertElement.className = `alert alert-${data.level}`;
+            alertElement.innerHTML = `
+                <div class="alert-header">
+                    <span class="alert-timestamp"><i class="fas fa-clock"></i> ${data.timestamp}</span>
+                    <span class="alert-level ${data.level.toLowerCase()}">
+                        <i class="fas fa-exclamation-circle"></i> ${data.level}
+                    </span>
+                </div>
+                <div class="alert-content">
+                    <p class="source-ip"><i class="fas fa-network-wired"></i> Source IP: ${data.source_ip}</p>
+                    <p class="alert-details"><i class="fas fa-info-circle"></i> ${data.details}</p>
+                </div>
+                <div class="alert-actions">
+                    <button onclick="investigateAlert('${data.source_ip}')" class="btn btn-small">
+                        <i class="fas fa-search"></i> Investigate
+                    </button>
+                    <button onclick="blockIP('${data.source_ip}')" class="btn btn-small btn-danger">
+                        <i class="fas fa-ban"></i> Block IP
+                    </button>
+                </div>
+            `;
+            alertsDiv.insertBefore(alertElement, alertsDiv.firstChild);
+            alertCount++;
+            updateStats();
+        });
+
+        // Get initial system status
+        fetch('/control/status')
+            .then(response => response.json())
+            .then(data => {
+                statusSpan.textContent = data.status;
+                statusSpan.className = `status-${data.status.toLowerCase()}`;
+                startBtn.disabled = data.status === 'Running';
+                stopBtn.disabled = data.status === 'Stopped';
+            });
+
+        // Update stats periodically
+        setInterval(updateStats, 5000);
+    </script>
+</body>
+</html> 

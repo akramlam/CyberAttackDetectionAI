@@ -1,14 +1,16 @@
-# Network Intrusion Detection System (NIDS)
+# Cyber Attack Detection AI System
 
-An AI-powered Network Intrusion Detection System that uses machine learning to detect suspicious network activities in real-time.
+A real-time network security monitoring system with AI-powered anomaly detection and interactive visualization.
 
-## Features
+## Overview
+
+This system provides:
 - Real-time network traffic monitoring
-- Machine learning-based anomaly detection
-- Interactive web dashboard
-- Real-time alerts
-- Database storage for historical analysis
-- Configurable detection sensitivity
-- Support for multiple network interfaces
+- AI-based anomaly detection
+- Interactive network visualization
+- Real-time alerts and notifications
+- Packet analysis and inspection
 
-## Architecture
+## Project Structure
+
+</file>

@@ -1,0 +1,3 @@
+D:/Downloads/Downloads/CyberAttackDetectionAI/src/agent/build/CMakeFiles/SecurityAgent.dir
+D:/Downloads/Downloads/CyberAttackDetectionAI/src/agent/build/CMakeFiles/ALL_BUILD.dir
+D:/Downloads/Downloads/CyberAttackDetectionAI/src/agent/build/CMakeFiles/ZERO_CHECK.dir

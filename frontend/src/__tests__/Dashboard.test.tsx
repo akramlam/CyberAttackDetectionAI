@@ -4,6 +4,7 @@ import { render, screen } from '@testing-library/react';
 import { act } from '@testing-library/react';
 import { Dashboard } from '../components/Dashboard';
 import { monitoringService, securityService } from '../services/api';
+import { waitFor } from '@testing-library/react';
 
 jest.mock('../services/api', () => ({
     monitoringService: {
@@ -40,13 +41,11 @@ describe('Dashboard Component', () => {
         (monitoringService.getHealth as jest.Mock).mockResolvedValueOnce(mockHealthData);
         (securityService.getAnomalies as jest.Mock).mockResolvedValueOnce(mockAnomaliesData);
 
-        await act(async () => {
-            render(<Dashboard />);
-        });
+        render(<Dashboard />);
 
-        expect(await screen.findByText(/system health/i)).toBeInTheDocument();
-        expect(await screen.findByText(/25%/)).toBeInTheDocument();
-        expect(await screen.findByText(/40%/)).toBeInTheDocument();
+        await screen.findByText(/system health/i);
+        await screen.findByText(/25%/);
+        await screen.findByText(/40%/);
     });
 
     it('handles error states', async () => {
@@ -54,10 +53,10 @@ describe('Dashboard Component', () => {
         (monitoringService.getHealth as jest.Mock).mockRejectedValueOnce(mockError);
         (securityService.getAnomalies as jest.Mock).mockResolvedValueOnce({ anomalies: [] });
 
-        await act(async () => {
-            render(<Dashboard />);
-        });
+        render(<Dashboard />);
 
-        expect(await screen.findByText(/failed to fetch data/i)).toBeInTheDocument();
+        await waitFor(() => {
+            expect(screen.getByText(/failed to fetch data/i)).toBeInTheDocument();
+        });
     });
 }); 

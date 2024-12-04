@@ -19,12 +19,27 @@ interface Alert {
     timestamp: string;
 }
 
+interface AgentData {
+    timestamp: string;
+    cpuUsage: number;
+    memoryUsage: number;
+}
+
+interface ThreatData {
+    id: number;
+    name: string;
+    severity: string;
+    timestamp: string;
+}
+
 export const RealTimeMonitor: React.FC = () => {
     const [metrics, setMetrics] = useState<MetricData[]>([]);
     const [alerts, setAlerts] = useState<Alert[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [showAlert, setShowAlert] = useState(false);
     const [currentAlert, setCurrentAlert] = useState<Alert | null>(null);
+    const [agentData, setAgentData] = useState<AgentData[]>([]);
+    const [threats, setThreats] = useState<ThreatData[]>([]);
 
     useEffect(() => {
         // Connect to WebSocket
@@ -41,8 +56,17 @@ export const RealTimeMonitor: React.FC = () => {
             setShowAlert(true);
         });
 
+        // Connect to WebSocket for real-time updates
+        const socket = new WebSocket(WS_ENDPOINT);
+        
+        socket.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            updateDashboard(data);
+        };
+
         return () => {
             websocketService.disconnect();
+            socket.close();
         };
     }, []);
 

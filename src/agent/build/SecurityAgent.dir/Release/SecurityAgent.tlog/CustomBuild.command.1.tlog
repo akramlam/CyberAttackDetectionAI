@@ -1,0 +1,10 @@
+^D:\DOWNLOADS\DOWNLOADS\CYBERATTACKDETECTIONAI\SRC\AGENT\CMAKELISTS.TXT
+setlocal
+D:\Downloads\Downloads\cmake-3.31.1-windows-x86_64\cmake-3.31.1-windows-x86_64\bin\cmake.exe -SD:/Downloads/Downloads/CyberAttackDetectionAI/src/agent -BD:/Downloads/Downloads/CyberAttackDetectionAI/src/agent/build --check-stamp-file D:/Downloads/Downloads/CyberAttackDetectionAI/src/agent/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

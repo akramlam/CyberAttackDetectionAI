@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="D:\Downloads\Downloads\CyberAttackDetectionAI\src\agent\agent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Downloads\Downloads\CyberAttackDetectionAI\src\agent\network_manager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\Downloads\Downloads\CyberAttackDetectionAI\src\agent\encryption_service.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="D:\Downloads\Downloads\CyberAttackDetectionAI\src\agent\types.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Downloads\Downloads\CyberAttackDetectionAI\src\agent\data_collector.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Downloads\Downloads\CyberAttackDetectionAI\src\agent\network_manager.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Downloads\Downloads\CyberAttackDetectionAI\src\agent\encryption_service.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\Downloads\Downloads\CyberAttackDetectionAI\src\agent\command_executor.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\Downloads\Downloads\CyberAttackDetectionAI\src\agent\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{2043105E-5388-3B46-96F3-59AC357D5B11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4C168587-0E36-3820-B46F-5B50DD175B35}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

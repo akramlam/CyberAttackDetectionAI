@@ -24,3 +24,4 @@ logs/
 # Project specific
 data/temp/
 models/saved/ 
+.fake

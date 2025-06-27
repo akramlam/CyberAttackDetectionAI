@@ -154,35 +154,6 @@ host: http://localhost:8080
 - superuser_token_headers: Headers d'authentification admin
 - normal_user_token_headers: Headers d'authentification utilisateur
 
-### Exécution des Tests
-
-**Commandes de Test**:
-`bash
-# Tests unitaires
-pytest backend/tests/unit/ -v
-
-# Tests d'intégration
-pytest backend/tests/integration/ -v
-
-# Tests de sécurité
-pytest tests/security/ -v
-
-# Tests E2E
-pytest backend/tests/e2e/ -v
-
-# Tests de performance
-pytest backend/tests/performance/ -v
-
-# Tests de charge
-locust -f backend/tests/load/locustfile.py --config backend/tests/load/locust.conf.yaml
-
-# Tests API Node.js
-cd api-tests && npm test
-
-# Tous les tests avec couverture
-pytest backend/tests/ -v --cov=app --cov-report=html
-`
-
 ## Métriques et Rapports
 
 ### Métriques de Qualité
@@ -204,34 +175,6 @@ pytest backend/tests/ -v --cov=app --cov-report=html
 - Tests de pénétration passés
 - Conformité aux standards de sécurité
 - Audit de sécurité validé
-
-## État Actuel des Tests
-
-### Tests Existants
-✅ Tests API de génération de rapports
-✅ Tests de détection zero-day
-✅ Tests d'intégration de monitoring
-✅ Tests d'intégration ML pipeline
-✅ Tests d'intégration de détection de menaces
-✅ Tests de charge Locust
-✅ Tests de performance
-✅ Tests API Node.js pour organisations
-
-### Tests Nouvellement Implémentés
-✅ Tests unitaires des microservices
-✅ Tests d'intégration des microservices
-✅ Tests de sécurité et résilience
-✅ Tests end-to-end complets
-✅ Tests de scénarios critiques d'incident
-
-### Tests Recommandés pour Implémentation Future
-
-**Tests Avancés**:
-- Tests de chaos engineering
-- Tests de conformité GDPR
-- Tests de performance sous charge extrême
-- Tests de récupération de données
-- Tests d'audit de sécurité automatisés
 
 ## Automatisation et CI/CD
 
